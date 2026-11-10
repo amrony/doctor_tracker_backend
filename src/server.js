@@ -2,6 +2,8 @@ import express from 'express';
 import { connectDatabase } from './config/database.js';
 import { requireAdmin } from './middleware/require-admin.js';
 import { Admin } from './models/admin.model.js';
+import { Doctor } from './models/doctor.model.js';
+import { Patient } from './models/patient.model.js';
 import { Session } from './models/session.model.js';
 import { authRouter } from './routes/auth.routes.js';
 import { createDoctorRouter } from './routes/doctor.routes.js';
@@ -48,10 +50,10 @@ async function start() {
 
   const connection = await connectDatabase();
   try {
-    await Promise.all([Admin.init(), Session.init()]);
+    await Promise.all([Admin.init(), Doctor.init(), Patient.init(), Session.init()]);
   } catch {
     await connection.close();
-    throw new Error('Unable to initialize admin and session storage. Check MongoDB permissions.');
+    throw new Error('Unable to initialize application storage and indexes. Check MongoDB permissions.');
   }
 
   app.listen(port, async (error) => {

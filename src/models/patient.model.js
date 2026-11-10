@@ -34,4 +34,7 @@ const patientSchema = new mongoose.Schema({
   autoCreate: false,
 });
 
+patientSchema.index({ createdAt: -1, _id: -1 });
+patientSchema.index({ doctorId: 1, createdAt: -1, _id: -1 });
+
 export const Patient = mongoose.model('Patient', patientSchema);

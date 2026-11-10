@@ -31,4 +31,6 @@ const doctorSchema = new mongoose.Schema({
   autoCreate: false,
 });
 
+doctorSchema.index({ createdAt: -1, _id: -1 });
+
 export const Doctor = mongoose.model('Doctor', doctorSchema);

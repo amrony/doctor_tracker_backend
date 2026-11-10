@@ -22,7 +22,7 @@ export async function getDashboardAnalytics(request, response) {
   const endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1));
   const startDate = new Date(endDate.getTime() - days * millisecondsPerDay);
 
-  const [doctors, patientStats] = await Promise.all([
+  const [doctors, totalPatients, dailyCounts] = await Promise.all([
     Doctor.aggregate([
       {
         $lookup: {
@@ -45,39 +45,33 @@ export async function getDashboardAnalytics(request, response) {
       },
       { $sort: { patientCount: -1, name: 1, _id: 1 } },
     ]),
+    Patient.countDocuments(),
     Patient.aggregate([
+      { $match: { createdAt: { $gte: startDate, $lt: endDate } } },
       {
-        $facet: {
-          totals: [{ $count: 'count' }],
-          daily: [
-            { $match: { createdAt: { $gte: startDate, $lt: endDate } } },
-            {
-              $group: {
-                _id: {
-                  $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' },
-                },
-                count: { $sum: 1 },
-              },
-            },
-            { $sort: { _id: 1 } },
-          ],
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' },
+          },
+          count: { $sum: 1 },
         },
       },
+      { $sort: { _id: 1 } },
     ]),
   ]);
 
-  const dailyCounts = new Map((patientStats[0]?.daily ?? []).map(({ _id, count }) => [_id, count]));
+  const countsByDate = new Map(dailyCounts.map(({ _id, count }) => [_id, count]));
   const patientTrend = Array.from({ length: days }, (_value, index) => {
     const date = new Date(startDate.getTime() + index * millisecondsPerDay);
     const dateKey = getUtcDateKey(date);
-    return { date: dateKey, count: dailyCounts.get(dateKey) ?? 0 };
+    return { date: dateKey, count: countsByDate.get(dateKey) ?? 0 };
   });
 
   return response.json({
     data: {
       totals: {
         doctors: doctors.length,
-        patients: patientStats[0]?.totals[0]?.count ?? 0,
+        patients: totalPatients,
       },
       patientsByDoctor: doctors.map(({ _id, name, specialization, patientCount }) => ({
         doctorId: _id,
