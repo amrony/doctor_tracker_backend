@@ -15,13 +15,13 @@ async function start() {
     throw new Error('PORT must be an integer between 1 and 65535.');
   }
 
-  const client = await connectDatabase();
+  const connection = await connectDatabase();
 
   app.listen(port, async (error) => {
     if (error) {
       console.error(`Could not start the API on port ${port} (${error.code}).`);
       process.exitCode = 1;
-      await client.close();
+      await connection.close();
       return;
     }
     console.log(`Server is running on https://localhost:${port}`);
