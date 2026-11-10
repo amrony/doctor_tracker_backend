@@ -5,6 +5,7 @@ import { Admin } from './models/admin.model.js';
 import { Session } from './models/session.model.js';
 import { authRouter } from './routes/auth.routes.js';
 import { createDoctorRouter } from './routes/doctor.routes.js';
+import { createPatientsRouter } from './routes/patients.routes.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -28,6 +29,7 @@ app.use('/api', (request, response, next) => {
 app.use('/api/auth', authRouter);
 app.use('/api', requireAdmin);
 app.use('/api/doctors', createDoctorRouter());
+app.use('/api/patients', createPatientsRouter());
 
 app.use((error, _request, response, next) => {
   if (response.headersSent) return next(error);

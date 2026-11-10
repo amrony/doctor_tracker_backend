@@ -1,5 +1,11 @@
 import { Router, json } from 'express';
 import { createDoctor, listDoctors, getDoctorMeta } from '../controllers/doctor.controller.js';
+import {
+  getDoctorById,
+  listDoctorPatients,
+  createDoctorPatient,
+  deleteDoctorPatient,
+} from '../controllers/patient.controller.js';
 
 export function createDoctorRouter() {
   const router = Router();
@@ -7,6 +13,11 @@ export function createDoctorRouter() {
   router.get('/meta', getDoctorMeta);
   router.get('/', listDoctors);
   router.post('/', json(), createDoctor);
+
+  router.get('/:doctorId', getDoctorById);
+  router.get('/:doctorId/patients', listDoctorPatients);
+  router.post('/:doctorId/patients', json(), createDoctorPatient);
+  router.delete('/:doctorId/patients/:patientId', deleteDoctorPatient);
 
   router.use((error, _request, response, next) => {
     if (response.headersSent) return next(error);
