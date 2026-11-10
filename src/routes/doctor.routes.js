@@ -1,9 +1,10 @@
 import { Router, json } from 'express';
-import { createDoctor, listDoctors } from '../controllers/doctor.controller.js';
+import { createDoctor, listDoctors, getDoctorMeta } from '../controllers/doctor.controller.js';
 
 export function createDoctorRouter() {
   const router = Router();
 
+  router.get('/meta', getDoctorMeta);
   router.get('/', listDoctors);
   router.post('/', json(), createDoctor);
 

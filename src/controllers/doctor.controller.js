@@ -21,6 +21,19 @@ function parseCalendarDate(value) {
   return date;
 }
 
+export async function getDoctorMeta(_request, response) {
+  const [specializations, hospitals] = await Promise.all([
+    Doctor.distinct('specialization'),
+    Doctor.distinct('hospital'),
+  ]);
+  return response.json({
+    data: {
+      specializations: specializations.filter(Boolean).sort(),
+      hospitals: hospitals.filter(Boolean).sort(),
+    },
+  });
+}
+
 export async function createDoctor(request, response) {
   const fields = {};
   for (const field of doctorFieldNames) {
