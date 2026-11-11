@@ -2,6 +2,10 @@ import { Router, json } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { currentAdmin, login, logout } from '../controllers/auth.controller.js';
 import { requireAdmin } from '../middleware/require-admin.js';
+import { createRequire } from 'module';
+
+var require = createRequire(import.meta.url);
+var module = { exports: {} };
 
 export const authRouter = Router();
 

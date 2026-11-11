@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --env-file-if-exists=.env --watch src/server.js",
-    "start": "node --env-file-if-exists=.env src/server.js",
+    "dev": "node init && node --env-file-if-exists=.env --watch src/server.js",
+    "start": "node init && node --env-file-if-exists=.env src/server.js",
     "seed:admin": "node --env-file-if-exists=.env src/scripts/seed-admin.js"
   },
   "dependencies": {
